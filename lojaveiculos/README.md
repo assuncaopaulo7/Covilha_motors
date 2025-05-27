@@ -16,7 +16,7 @@ d) Pessoa 4 acede ao website e acede como segundo cliente para comprar carros
 
 (O localhost:3306 é para a conexao no mysql. Corresponde ao sítio onde temos a base de dados)
 
-.......
+...................................... COMO ACEDER PELO SMARTPHONE ......................................
 
 Privacy & Security > Location no windows faz com q possamos connectar do smartphone para o servidor do vosso pc q esta a correr o codigo
 
@@ -28,7 +28,7 @@ Ir ao browser do vosso smartphone e escrever:
 
 http://192.168.1.2:8080/
 
-......
+...................................... SEGURANCA ......................................
 
 Passar os "vendedores" para "gestores".
 
@@ -44,11 +44,18 @@ gestor_id | car_id | inserir/retirar | number_of_cars
 
 2     |     4    |   RETIROU      |    2
 
-......
+...................................... ESTATISTICA ......................................
 
 Marcos:
 TO_DO_LIST: Temos de ter um botao no website chamado "estatísticas" onde podemos ver os users todos, mas podemos filtrar por "maior gastador" ou "menor gastador" ou outros fatores importantes, ou podemos ver todos os carros e filtrar pelo modelo e/ou categoria "mais vendido" ou pelo modelo e/ou categoria que gerou mais dinheiro" ou o "último modelo que deu entrada no website pelo vendedor". E outras estatísticas como "SUMs", "AVGs" e "COUNTs" (soma, média de profits e counts de vendas, etc)
 
 
+CENA EXTRA:
+
 TO_DO_LIST: Column "Disponibilidade" na tabela Car, que podem dizer "Disponível" ou "Esgotado"
+
+
+NOTA:
+
+Nao sei se para a parte da segurança a stora se refere tambem a criptografia, eu nao sei se ela quer q nós usemos chaves entre pc e phone para garantir ligacao segura, pq tecnicamente, todos os smartphones se deveriam poder conectar ao website q está a ser corrido no nosso pc, pq o objetivo de um website é ser acedido por todos. Por isso, à partida nao é preciso.
 
