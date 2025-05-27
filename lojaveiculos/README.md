@@ -38,11 +38,11 @@ Cada vez que os gestores meterem um carro para dentro da tabela de carros, deve 
 
 TABLE
 
-gestor_id  car_id  inserir/retirar  number_of_cars
+gestor_id | car_id | inserir/retirar | number_of_cars
 
-1          4       INSERIU          1
+1     |     4    |   INSERIU      |    1
 
-2          4       RETIROU          2
+2     |     4    |   RETIROU      |    2
 
 ......
 
