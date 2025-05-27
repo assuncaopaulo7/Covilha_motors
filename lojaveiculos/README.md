@@ -28,22 +28,23 @@ Ir ao browser do vosso smartphone e escrever:
 
 http://192.168.1.2:8080/
 
---------------
-OPCAO PARA ALTERACAO:
+......
 
-O vendedor1 vende o carro X ao cliente1, entao deveria aparecer tabela:
+Passar os "vendedores" para "gestores".
+
+Cada vez que os gestores meterem um carro para dentro da tabela de carros, deve haver uma outra tabela que dica:
+("Atualizar" button, "Eliminar" button e "Adicionar novo" sao ambos INSERIU/RETIROU 
+
 
 TABLE
 
-vendedor   cliente   car_id  num_of_cars
+gestor_id  car_id  inserir/retirar  number_of_cars
 
-vendedor1  cliente1  X       1
+1          4       INSERIU          1
 
-vendedor2  cliente1  Y       2
+2          4       RETIROU          2
 
-
-O vendedor deveria ser o único a fazer Login, e ele registaria uma sale com a tabela anterior.
---------------
+......
 
 Marcos:
 TO_DO_LIST: Temos de ter um botao no website chamado "estatísticas" onde podemos ver os users todos, mas podemos filtrar por "maior gastador" ou "menor gastador" ou outros fatores importantes, ou podemos ver todos os carros e filtrar pelo modelo e/ou categoria "mais vendido" ou pelo modelo e/ou categoria que gerou mais dinheiro" ou o "último modelo que deu entrada no website pelo vendedor". E outras estatísticas como "SUMs", "AVGs" e "COUNTs" (soma, média de profits e counts de vendas, etc)
