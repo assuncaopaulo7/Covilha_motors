@@ -22,7 +22,17 @@ IPv4 Address. . . . . . . . . . . : 192.168.1.2
 Ir ao browser do vosso smartphone e escrever:
 http://192.168.1.2:8080/
 
+--------------
+OPCAO PARA ALTERACAO:
+O vendedor1 vende o carro X ao cliente1, entao deveria aparecer tabela:
 
+TABLE
+vendedor   cliente   car_id  num_of_cars
+vendedor1  cliente1  X       1
+vendedor2  cliente1  Y       2
+
+O vendedor deveria ser o único a fazer Login, e ele registaria uma sale com a tabela anterior.
+--------------
 
 Marcos:
 TO_DO_LIST: Temos de ter um botao no website chamado "estatísticas" onde podemos ver os users todos, mas podemos filtrar por "maior gastador" ou "menor gastador" ou outros fatores importantes, ou podemos ver todos os carros e filtrar pelo modelo e/ou categoria "mais vendido" ou pelo modelo e/ou categoria que gerou mais dinheiro" ou o "último modelo que deu entrada no website pelo vendedor". E outras estatísticas como "SUMs", "AVGs" e "COUNTs" (soma, média de profits e counts de vendas, etc)
