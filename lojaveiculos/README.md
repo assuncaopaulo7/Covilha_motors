@@ -16,20 +16,31 @@ d) Pessoa 4 acede ao website e acede como segundo cliente para comprar carros
 
 (O localhost:3306 é para a conexao no mysql. Corresponde ao sítio onde temos a base de dados)
 
+.......
+
 Privacy & Security > Location no windows faz com q possamos connectar do smartphone para o servidor do vosso pc q esta a correr o codigo
+
 No vosso pc ir ao CMD e escrever "ipconfig" e vao ver uma coisa deste genero:
+
 IPv4 Address. . . . . . . . . . . : 192.168.1.2
+
 Ir ao browser do vosso smartphone e escrever:
+
 http://192.168.1.2:8080/
 
 --------------
 OPCAO PARA ALTERACAO:
+
 O vendedor1 vende o carro X ao cliente1, entao deveria aparecer tabela:
 
 TABLE
+
 vendedor   cliente   car_id  num_of_cars
+
 vendedor1  cliente1  X       1
+
 vendedor2  cliente1  Y       2
+
 
 O vendedor deveria ser o único a fazer Login, e ele registaria uma sale com a tabela anterior.
 --------------
