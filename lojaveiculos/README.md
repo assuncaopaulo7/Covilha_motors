@@ -14,4 +14,19 @@ d) Pessoa 4 acede ao website e acede como segundo cliente para comprar carros
 2) Dar run no play button
 3) ir ao website "localhost:8080"
 
-(O localhost:3306 é para a conexao no mysql. Corresponde ao sítio onde temos a base de dados) 
+(O localhost:3306 é para a conexao no mysql. Corresponde ao sítio onde temos a base de dados)
+
+Privacy & Security > Location no windows faz com q possamos connectar do smartphone para o servidor do vosso pc q esta a correr o codigo
+No vosso pc ir ao CMD e escrever "ipconfig" e vao ver uma coisa deste genero:
+IPv4 Address. . . . . . . . . . . : 192.168.1.2
+Ir ao browser do vosso smartphone e escrever:
+http://192.168.1.2:8080/
+
+
+
+Marcos:
+TO_DO_LIST: Temos de ter um botao no website chamado "estatísticas" onde podemos ver os users todos, mas podemos filtrar por "maior gastador" ou "menor gastador" ou outros fatores importantes, ou podemos ver todos os carros e filtrar pelo modelo e/ou categoria "mais vendido" ou pelo modelo e/ou categoria que gerou mais dinheiro" ou o "último modelo que deu entrada no website pelo vendedor". E outras estatísticas como "SUMs", "AVGs" e "COUNTs" (soma, média de profits e counts de vendas, etc)
+
+
+TO_DO_LIST: Column "Disponibilidade" na tabela Car, que podem dizer "Disponível" ou "Esgotado"
+
