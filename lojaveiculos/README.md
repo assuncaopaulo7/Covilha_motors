@@ -56,6 +56,8 @@ TO_DO_LIST: Column "Disponibilidade" na tabela Car, que podem dizer "Disponível
 
 ...................................... SECURITY CRYPTOGRAPHY ......................................
 
+(Não sei se é bem assim, mas deve ser algo deste género:)
+
 Steps to Enable HTTPS (TLS):
 
 1. Generate a Keystore (contains SSL certificate + private key):
