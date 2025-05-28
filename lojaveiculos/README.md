@@ -54,6 +54,43 @@ CENA EXTRA:
 
 TO_DO_LIST: Column "Disponibilidade" na tabela Car, que podem dizer "Disponível" ou "Esgotado"
 
+...................................... SECURITY CRYPTOGRAPHY ......................................
+
+Steps to Enable HTTPS (TLS):
+
+1. Generate a Keystore (contains SSL certificate + private key):
+
+
+keytool -genkeypair -alias lojaveiculos -keyalg RSA -keysize 2048 \
+
+  -storetype PKCS12 -keystore keystore.p12 -validity 3650
+
+Place the keystore.p12 file in src/main/resources
+
+
+2. Configure Spring Boot in application.properties:
+
+server.port=8443
+
+server.ssl.enabled=true
+
+server.ssl.key-store=classpath:keystore.p12
+
+server.ssl.key-store-password=your_password
+
+server.ssl.key-store-type=PKCS12
+
+server.ssl.key-alias=lojaveiculos
+
+
+3. Run your application and access:
+
+https://localhost:8443
+
+This enables encrypted HTTPS communication between your PC (server) and other devices (clients).
+And also you need to check if it's working.
+
+......................................
 
 NOTA:
 
