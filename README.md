@@ -44,7 +44,7 @@ http://192.168.1.2:8080/
 
 ---
 
-## SEGURANÇA
+## LOGS
 
 Passar os "vendedores" para "gestores".
 
@@ -134,6 +134,16 @@ https://localhost:8443
 
 ---
 
-## NOTA
+## CENAS A MUDAR:
 
-Não sei se para a parte da segurança a stora se refere também a criptografia, eu não sei se ela quer que nós usemos chaves entre pc e phone para garantir ligação segura, porque tecnicamente, todos os smartphones se deveriam poder conectar ao website que está a ser corrido no nosso pc, porque o objetivo de um website é ser acedido por todos. Por isso, à partida não é preciso.
+- Só deve haver 1 administrador e vários clientes. O adiminstrador apenas Adiciona/Remove/Atualiza carros e vê Estatísticas. Os clientes apenas compram carros. O Registar apenas serve para clientes. O Login serve para clientes e o administrador.
+
+- (Criar um user com password para todos entrarem no /user, em vez do /root???). Temos de ter um ficheiro BD, para todos usarem a mesma BD, independentemente do PC, em vez de usar o /root no port 3306 com BD loja_veiculos, temos de usar um ficheiro e metê-lo no código do projeto.
+
+A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
+
+-Talvez nao seja preciso carrinho de compras
+
+-Quando elimina-se um carro, manter as vendas desse carro no sales table. Eu elimineium carro, e quando fui ver a tabela sales, havia sales desse carro, que também foram eliminadas, só porque o carro tinha sido eliminado. Isto nao pode acontecer, e temos um "problema de cascata" que temos de resolver.
+
+-Meter sito com css estilo, tipo imagens para cada carro (ao adicionar um carro, teria de tb ser preciso para introduzir uma imagem do PC do administrador para ser associada ao carro a ser adicionado). Ficaria do estilo do website do continente ou worten, em vez de uma simples tabela.
