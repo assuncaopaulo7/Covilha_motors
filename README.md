@@ -136,13 +136,15 @@ https://localhost:8443
 
 ## CENAS A MUDAR:
 
+- O código nao usa exatamente o que a professora quer, por exemplo, ela deu stateful, stateless beans. E eu uso outra coisa. E ela usa @Column(name = "CUSTOMER_ID") e eu uso outra coisa. E até é melhor e mais fácil a maneira dela. Eu já mudo isso depois do teste.
+
 - Só deve haver 1 administrador e vários clientes. O adiminstrador apenas Adiciona/Remove/Atualiza carros e vê Estatísticas. Os clientes apenas compram carros. O Registar apenas serve para clientes. O Login serve para clientes e o administrador.
 
 - (Criar um user com password para todos entrarem no /user, em vez do /root???). Temos de ter um ficheiro BD, para todos usarem a mesma BD, independentemente do PC, em vez de usar o /root no port 3306 com BD loja_veiculos, temos de usar um ficheiro e metê-lo no código do projeto.
 
 A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
 
-- Talvez nao seja preciso carrinho de compras
+- Se for preciso ter carrinho de compras (usar stateful session bean)
 
 - Quando elimina-se um carro, manter as vendas desse carro no sales table. Eu elimineium carro, e quando fui ver a tabela sales, havia sales desse carro, que também foram eliminadas, só porque o carro tinha sido eliminado. Isto nao pode acontecer, e temos um "problema de cascata" que temos de resolver.
 
