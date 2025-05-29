@@ -142,8 +142,8 @@ https://localhost:8443
 
 A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
 
--Talvez nao seja preciso carrinho de compras
+- Talvez nao seja preciso carrinho de compras
 
--Quando elimina-se um carro, manter as vendas desse carro no sales table. Eu elimineium carro, e quando fui ver a tabela sales, havia sales desse carro, que também foram eliminadas, só porque o carro tinha sido eliminado. Isto nao pode acontecer, e temos um "problema de cascata" que temos de resolver.
+- Quando elimina-se um carro, manter as vendas desse carro no sales table. Eu elimineium carro, e quando fui ver a tabela sales, havia sales desse carro, que também foram eliminadas, só porque o carro tinha sido eliminado. Isto nao pode acontecer, e temos um "problema de cascata" que temos de resolver.
 
--Meter sito com css estilo, tipo imagens para cada carro (ao adicionar um carro, teria de tb ser preciso para introduzir uma imagem do PC do administrador para ser associada ao carro a ser adicionado). Ficaria do estilo do website do continente ou worten, em vez de uma simples tabela.
+- Meter página inicial do site com css estilo, tipo imagens para cada carro (ao adicionar um carro, teria de tb ser preciso para introduzir uma imagem do PC do administrador para ser associada ao carro a ser adicionado). Ficaria do estilo do website do continente ou worten, em vez de uma simples tabela.
