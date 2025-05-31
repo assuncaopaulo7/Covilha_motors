@@ -32,6 +32,7 @@ Ir ao browser do vosso smartphone e escrever:
 http://192.168.1.2:8080/
 ```
 
+---
 
 O root usa a password que definiram quando instalaram o mysql, e usam-na para aceder ao mysql e mysqlWorkbench.
 
