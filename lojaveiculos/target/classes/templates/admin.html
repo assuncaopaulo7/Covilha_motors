@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin</title>
+</head>
+<body>
+<h2>Gestão de Veículos</h2>
+
+<h3>Adicionar novo</h3>
+<form th:action="@{/admin/cars}" method="post">
+    Marca: <input type="text" name="brand"        required/>
+    Modelo: <input type="text" name="modelCar"    required/>
+    Categoria: <input type="text" name="category" required/>
+    Preço: <input type="number" step="0.01" name="price" required/>
+    Stock: <input type="number" name="stock" required/>
+    <button type="submit">Adicionar</button>
+</form>
+
+<hr/>
+<table border="1">
+    <tr>
+        <th>ID</th><th>Marca</th><th>Modelo</th><th>Categoria</th>
+        <th>Preço</th><th>Stock</th><th>Ações</th>
+    </tr>
+
+    <tr th:each="car : ${cars}">
+        <td th:text="${car.id}"></td>
+        <td th:text="${car.brand}"></td>
+        <td th:text="${car.model}"></td>
+        <td th:text="${car.category}"></td>
+
+        <!-- formulário Atualizar -->
+        <td>
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/update'}" method="post" style="display:inline">
+                <input type="number" step="0.01" name="price" th:value="${car.price}" style="width:5em;"/>
+        </td>
+        <td>
+            <input type="number" name="stock" th:value="${car.stock}" style="width:3em;"/>
+        </td>
+        <td>
+            <button type="submit">Atualizar</button>
+            </form>
+            <!-- formulário Eliminar -->
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/delete'}" method="post" style="display:inline">
+                <button type="submit" onclick="return confirm('Eliminar este veículo?');">Eliminar</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a th:href="@{/admin/stats}">Ver estatísticas (em breve)</a> |
+    <a th:href="@{/cars}">Loja</a> |
+    <a th:href="@{/logout}">Logout</a>
+</p>
+</body>
+</html>
