@@ -107,14 +107,14 @@ https://localhost:8443
 
 ---
 
-## CENAS A MUDAR:
+## CENAS A IMPLEMENTAR:
 
 - Ou fazemos o codigo com o que demos nas aulas práticas "Spring Boot" (que já está feito) ou facilmente podemos mudar para o que demos nas aulas teóricas "Jakarta EE / EJB". Talvez a primeira opção seja melhor, sendo que já está feita.
 
 - Só deve haver 1 administrador e vários clientes. O adiminstrador apenas Adiciona/Remove/Atualiza carros e vê Estatísticas. Os clientes apenas compram carros. O Registar apenas serve para clientes. O Login serve para clientes e o administrador.
 
 
-- Há duas palavras chave:
+- Problema da pass da base de dados / ficheiro:
 
 A) Uma é a password do mysql ou mysqlWorkbench
 
