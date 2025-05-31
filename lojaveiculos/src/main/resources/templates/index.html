@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <title>Loja de Veículos</title>
+    <style>
+        .stock-zero {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -36,7 +42,10 @@
         <td th:text="${car.model}"></td>
         <td th:text="${car.category}"></td>
         <td th:text="${car.price}"></td>
-        <td th:text="${car.stock}"></td>
+        <td>
+            <span th:if="${car.stock == 0}" class="stock-zero" th:text="${car.stock}"></span>
+            <span th:if="${car.stock != 0}" th:text="${car.stock}"></span>
+        </td>
         <td>
             <a th:if="${loggedUser != null and loggedUser.role == 'client'}"
                th:href="@{'/buy/' + ${car.id}}">Comprar</a>
