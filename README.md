@@ -115,7 +115,9 @@ https://localhost:8443
 
 
 - Há duas palavras chave:
+
 A) Uma é a password do mysql ou mysqlWorkbench
+
 B) A outra é a password aplication.properties = JoelTapia2004
 
 
@@ -123,14 +125,20 @@ A!=B
 
 
 Ao criares mysql tu crias uma pass A)
+
 Ao usares o aplication.properties, tu usas a pass B)
+
 Quando tu entras no mysql, tu usas a A), mas era suposto ainda te pedir a B) para conseguires aceder à BD loja_veiculos
 
 
 $ mysql
+
 password: A)
+
 mysql> USE loja_veiculos
+
 password: B)   (esta password nao é pedida neste momento, mas eu queria que fosse pedida)
+
 mysql> (estas dentro da BD loja_veiculos)
 
 
