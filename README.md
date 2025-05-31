@@ -32,6 +32,17 @@ Ir ao browser do vosso smartphone e escrever:
 http://192.168.1.2:8080/
 ```
 
+
+O root usa a password que definiram quando instalaram o mysql, e usam-na para aceder ao mysql e mysqlWorkbench.
+
+Criamos um user app_user (root/user) e associamos esse user à BD loja_veiculos. A pass "pass" do application.properties serve para entrar nesse user:
+
+CREATE USER 'app_user'@'%' IDENTIFIED BY 'pass';
+
+GRANT ALL PRIVILEGES ON loja_veiculos.* TO 'app_user'@'%';
+
+FLUSH PRIVILEGES;
+
 ---
 
 ## ESTATÍSTICA
@@ -112,37 +123,6 @@ https://localhost:8443
 - Ou fazemos o codigo com o que demos nas aulas práticas "Spring Boot" (que já está feito) ou facilmente podemos mudar para o que demos nas aulas teóricas "Jakarta EE / EJB". Talvez a primeira opção seja melhor, sendo que já está feita.
 
 - Só deve haver 1 administrador e vários clientes. O adiminstrador apenas Adiciona/Remove/Atualiza carros e vê Estatísticas. Os clientes apenas compram carros. O Registar apenas serve para clientes. O Login serve para clientes e o administrador.
-
-
-- Problema da pass da base de dados / ficheiro:
-
-A) Uma é a password do mysql ou mysqlWorkbench
-
-B) A outra é a password aplication.properties = JoelTapia2004
-
-
-A!=B
-
-
-Ao criares mysql tu crias uma pass A)
-
-Ao usares o aplication.properties, tu usas a pass B)
-
-Quando tu entras no mysql, tu usas a A), mas era suposto ainda te pedir a B) para conseguires aceder à BD loja_veiculos
-
-
-$ mysql
-
-password: A)
-
-mysql> USE loja_veiculos
-
-password: B)   (esta password nao é pedida neste momento, mas eu queria que fosse pedida)
-
-mysql> (estas dentro da BD loja_veiculos)
-
-
-A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench ou mysql, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
 
 - Eu quero um ficheiro que faça com que ao eu meter no github o projeto e depois alguém fazer download, essa pessoa fique com os dados de clientes, sales, etc 
 
