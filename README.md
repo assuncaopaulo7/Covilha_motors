@@ -1,13 +1,3 @@
-# Exemplo de Página Simples
-
-Isto é um exemplo de uma página simples, do início ao fim. Comecei por registar cliente, depois registar vendedor, pôr carros à venda usando o vendedor, e comprar carros usando o cliente. E também a funcionalidade de Adicionar, Atualizar e Eliminar carros pelo vendedor, e Comprar carros pelo cliente. Gerar faturas. Erros e mensagens de aviso.
-
-Vou meter o código no github para darem uma vista de olhos. As tabelas estao muito simples ainda, e não sei como fazer com q um de nós corra o projeto num computador e outro colega aceda ao website (usando o mesmo wifi) e possamos simular:
-
-- a) Pessoa 1 corre website
-- b) Pessoa 2 acede ao website e acede como vendedor para gerir carros. E depois aceder como segundo vendedor (Podem haver vários cliente e vendedores)
-- c) Pessoa 3 acede ao website e acede como cliente para comprar carros
-- d) Pessoa 4 acede ao website e acede como segundo cliente para comprar carros
 
 ---
 
@@ -40,23 +30,6 @@ Ir ao browser do vosso smartphone e escrever:
 
 ```
 http://192.168.1.2:8080/
-```
-
----
-
-## LOGS
-
-Passar os "vendedores" para "gestores".
-
-Cada vez que os gestores meterem um carro para dentro da tabela de carros, deve haver uma outra tabela que dica: ("Atualizar" button, "Eliminar" button e "Adicionar novo" sao ambos INSERIU/RETIROU)
-
-### Tabela Exemplo
-
-```
-gestor_id | car_id | inserir/retirar | number_of_cars
-------------------------------------------------------
-1         | 4      | INSERIU         | 1
-2         | 4      | RETIROU         | 2
 ```
 
 ---
@@ -140,11 +113,30 @@ https://localhost:8443
 
 - Só deve haver 1 administrador e vários clientes. O adiminstrador apenas Adiciona/Remove/Atualiza carros e vê Estatísticas. Os clientes apenas compram carros. O Registar apenas serve para clientes. O Login serve para clientes e o administrador.
 
-- (Criar um user com password para todos entrarem no /user, em vez do /root???). Temos de ter um ficheiro BD, para todos usarem a mesma BD, independentemente do PC, em vez de usar o /root no port 3306 com BD loja_veiculos, temos de usar um ficheiro e metê-lo no código do projeto.
 
-A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
+- Há duas palavras chave:
+A) Uma é a password do mysql ou mysqlWorkbench
+B) A outra é a password aplication.properties = JoelTapia2004
 
-- Se for preciso ter carrinho de compras (usar stateful session bean)
+
+A!=B
+
+
+Ao criares mysql tu crias uma pass A)
+Ao usares o aplication.properties, tu usas a pass B)
+Quando tu entras no mysql, tu usas a A), mas era suposto ainda te pedir a B) para conseguires aceder à BD loja_veiculos
+
+
+$ mysql
+password: A)
+mysql> USE loja_veiculos
+password: B)   (esta password nao é pedida neste momento, mas eu queria que fosse pedida)
+mysql> (estas dentro da BD loja_veiculos)
+
+
+A professora disse que ao entrar no /user (ou /root/user) meteriamos a password da base de dados, a password que está no ficheiro aplication.properties "JoelTapia2004". E ela diz que neste momento, essa password nao esta a ser usada, nem a ser pedida, e o objetivo é ao entrar no mysqlWorkbench ou mysql, teriamos de meter a password JoelTapia2004 para ter acesso à BD.
+
+- Eu quero um ficheiro que faça com que ao eu meter no github o projeto e depois alguém fazer download, essa pessoa fique com os dados de clientes, sales, etc 
 
 - Quando elimina-se um carro, manter as vendas desse carro no sales table. Eu elimineium carro, e quando fui ver a tabela sales, havia sales desse carro, que também foram eliminadas, só porque o carro tinha sido eliminado. Isto nao pode acontecer, e temos um "problema de cascata" que temos de resolver.
 
