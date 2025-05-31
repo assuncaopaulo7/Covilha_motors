@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Fatura</title></head>
+<body>
+<h2>Compra concluída</h2>
+<div th:if="${invoice != null}">
+    <p>Fatura #<span th:text="${invoice.id}"></span></p>
+    <p>Data: <span th:text="${invoice.date}"></span></p>
+    <p>Total: <span th:text="${invoice.total}"></span> €</p>
+    <hr/>
+    <table border="1">
+        <tr><th>Produto</th><th>Qt</th><th>Subtotal</th></tr>
+        <tr th:each="sale : ${invoice.sales}">
+            <td th:text="${sale.car.brand + ' ' + sale.car.model}"></td>
+            <td th:text="${sale.quantity}"></td>
+            <td th:text="${sale.total}"></td>
+        </tr>
+    </table>
+</div>
+<p><a th:href="@{/cars}">Continuar</a></p>
+</body>
+</html>
