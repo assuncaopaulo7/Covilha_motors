@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Loja de Veículos</title>
+    <style>
+        table, th, td { border:1px solid black; border-collapse:collapse; padding:5px; }
+        .stock-zero   { color:red; font-weight:bold; }
+        img.thumb     { max-width:120px; max-height:80px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Loja de Veículos Motorizados</h1>
+    <div>
+        <span th:if="${loggedUser != null}">
+            Olá, <b th:text="${loggedUser.nome}">User</b>!
+            [<a th:href="@{/logout}">Logout</a>]
+            <span th:if="${loggedUser.role == 'admin'}">
+                | <a th:href="@{/admin}">Painel Admin</a>
+            </span>
+        </span>
+        <span th:if="${loggedUser == null}">
+            [<a th:href="@{/login}">Login</a>] ou
+            [<a th:href="@{/register}">Registar</a>]
+        </span>
+    </div>
+</header>
+<hr/>
+
+<form th:action="@{/cars}" method="get">
+    Categoria:
+    <select name="category">
+        <option value="">-- todas --</option>
+        <option>Carro</option><option>Moto</option><option>SUV</option>
+    </select>
+    <button type="submit">Filtrar</button>
+    &nbsp; Buscar:
+    <input type="text" name="search" placeholder="Marca ou modelo"/>
+    <button type="submit">Pesquisar</button>
+</form>
+
+<p th:if="${filter != null}" th:text="${filter}"></p>
+
+<table>
+    <tr>
+        <th>Imagem</th><th>Marca</th><th>Modelo</th><th>Categoria</th>
+        <th>Preço</th><th>Stock</th><th></th>
+    </tr>
+
+    <tr th:each="car : ${cars}">
+        <!-- thumbnail (mostra só se existir imagem) -->
+        <td>
+            <img th:if="${car.imagePath != null}"
+                 th:src="@{'/images/' + ${car.imagePath}}"
+                 class="thumb" />
+        </td>
+
+        <td th:text="${car.brand}"></td>
+        <td th:text="${car.model}"></td>
+        <td th:text="${car.category}"></td>
+        <td th:text="${car.price}"></td>
+
+        <td th:classappend="${car.stock == 0} ? 'stock-zero'">
+            <span th:text="${car.stock}"></span>
+        </td>
+
+        <td>
+            <!-- botão Comprar segundo regras já existentes -->
+            <a th:if="${loggedUser != null and loggedUser.role == 'client'}"
+               th:href="@{'/buy/' + ${car.id}}">Comprar</a>
+            <a th:if="${loggedUser == null}" th:href="@{/login}">Comprar</a>
+            <span th:if="${loggedUser != null and loggedUser.role == 'vendor'}">(sem compra)</span>
+        </td>
+    </tr>
+
+    <tr th:unless="${cars.size()} > 0">
+        <td colspan="7">Nenhum veículo encontrado.</td>
+    </tr>
+</table>
+
+</body>
+</html>

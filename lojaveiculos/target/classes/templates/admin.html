@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin</title>
+    <style>
+        table, th, td { border:1px solid black; border-collapse:collapse; padding:4px; }
+        .stock-zero   { color:red; font-weight:bold; }
+        input[type=number] { width:5em; }
+    </style>
+</head>
+<body>
+
+<h2>Gestão de Veículos</h2>
+
+<h3>Adicionar novo</h3>
+<form th:action="@{/admin/cars}" method="post" enctype="multipart/form-data">
+    Marca: <input type="text" name="brand" required />
+    Modelo: <input type="text" name="modelCar" required />
+    Categoria:
+    <select name="category">
+        <option>Carro</option><option>Moto</option><option>SUV</option>
+    </select>
+    Preço: <input type="number" step="0.01" name="price" min="0" required />
+    Stock: <input type="number" name="stock" min="0" required />
+    Imagem: <input type="file" name="image" accept="image/*" />
+    <button type="submit">Adicionar</button>
+</form>
+
+<hr/>
+
+<table>
+    <tr>
+        <th>ID</th><th>Marca</th><th>Modelo</th><th>Categoria</th>
+        <th>Preço</th><th>Stock</th><th>Ações</th>
+    </tr>
+
+    <tr th:each="car : ${cars}">
+        <td th:text="${car.id}"></td>
+        <td th:text="${car.brand}"></td>
+        <td th:text="${car.model}"></td>
+        <td th:text="${car.category}"></td>
+
+        <!-- formulário Atualizar abrange inputs + botão -->
+        <td colspan="2">
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/update'}"
+                  method="post" style="display:inline">
+                Preço:
+                <input type="number" step="0.01" name="price"
+                       th:value="${car.price}" min="0" />
+                Stock:
+                <input type="number" name="stock"
+                       th:value="${car.stock}" min="0"
+                       th:classappend="${car.stock==0} ? 'stock-zero'" />
+                <button type="submit">Atualizar</button>
+            </form>
+        </td>
+
+        <td>
+            <!-- upload / substituir imagem -->
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/image'}"
+                  method="post" enctype="multipart/form-data"
+                  style="display:inline">
+                <input type="file" name="image" accept="image/*"
+                       style="display:none;" onchange="this.form.submit()">
+                <button type="button"
+                        onclick="this.previousElementSibling.click();">
+                    Upload imagem
+                </button>
+            </form>
+
+            <!-- eliminar carro -->
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/delete'}"
+                  method="post" style="display:inline">
+                <button type="submit"
+                        onclick="return confirm('Eliminar este veículo?');">
+                    Eliminar
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a th:href="@{/admin/stats}">Ver estatísticas (em breve)</a> |
+    <a th:href="@{/admin/logs}">Logs</a> |
+    <a th:href="@{/cars}">Loja</a> |
+    <a th:href="@{/logout}">Logout</a>
+</p>
+</body>
+</html>
