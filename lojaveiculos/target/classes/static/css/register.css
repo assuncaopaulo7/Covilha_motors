@@ -14,11 +14,6 @@ html {
     box-shadow: 0 15px 25px rgba(0,0,0,.6);
     border-radius: 10px;
 
-    display: flex;              /* activamos flexbox */
-    flex-direction: column;     /* en columna */
-    justify-content: space-between;
-    height: 420px;
-
 }
 
 .login-box h2 {
