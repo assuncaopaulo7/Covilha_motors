@@ -34,7 +34,7 @@ http://192.168.1.2:8080/
 
 ---
 
-O root usa a password que definiram quando instalaram o mysql, e usam-na para aceder ao mysql e mysqlWorkbench.
+O root usa a password que definiram quando instalaram o mysql, e usam-na para aceder ao mysql e mysqlWorkbench. Ao aceder ao root/ temos acesso a todos os users. Mas ao aceder apenas ao root/app_user, temos apenas acesso ao app_user.
 
 Criamos um user app_user (root/user) e associamos esse user à BD loja_veiculos. A pass "pass" do application.properties serve para entrar nesse user:
 
@@ -43,6 +43,8 @@ CREATE USER 'app_user'@'%' IDENTIFIED BY 'pass';
 GRANT ALL PRIVILEGES ON loja_veiculos.* TO 'app_user'@'%';
 
 FLUSH PRIVILEGES;
+
+Agora vamos ao mysql ou mysqlWorkbench e em vez de uma ligação root/, fazemos ligação com root/app_user, usando a pass que definimos para esse user
 
 ---
 
