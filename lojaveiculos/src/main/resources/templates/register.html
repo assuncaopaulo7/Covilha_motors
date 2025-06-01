@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Registo</title></head>
+<head>
+    <meta charset="UTF-8"><title>Registo</title>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
 <body>
-<h2>Registar</h2>
-<form th:action="@{/register}" method="post">
-    Nome: <input type="text" name="nome" required/><br/>
-    Email: <input type="email" name="email" required/><br/>
-    Password: <input type="password" name="password" required/><br/>
-    <button type="submit">Criar conta</button>
-</form>
-<p th:if="${error != null}" th:text="${error}" style="color:red;"></p>
-<p><a th:href="@{/login}">Login</a> | <a th:href="@{/cars}">Loja</a></p>
+    <div class="login-box">
+        <h2>Registar</h2>
+        <form th:action="@{/register}" method="post">
+            <div class="user-box">
+                <input type="text" name="nome" required/><br/>
+                <label>Nome</label>
+            </div>
+            <div class="user-box">
+                <input type="email" name="email" required/><br/>
+                <label>Email</label>
+            </div>
+            <div class="user-box">
+                <input type="password" name="password" required/><br/>
+                <label>Password</label>
+            </div>
+            <button type="submit">Criar conta</button>
+        </form>
+        <p th:if="${error != null}" th:text="${error}" style="color:red;"></p>
+        <p><a th:href="@{/login}">Login</a><a th:href="@{/cars}">Loja</a></p>
+    </div>
 </body>
 </html>
