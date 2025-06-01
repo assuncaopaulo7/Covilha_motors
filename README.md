@@ -44,7 +44,7 @@ GRANT ALL PRIVILEGES ON loja_veiculos.* TO 'app_user'@'%';
 
 FLUSH PRIVILEGES;
 
-Agora vamos ao mysql ou mysqlWorkbench e em vez de uma ligação root/, fazemos ligação com root/app_user, usando a pass que definimos para esse user
+Agora vamos ao mysql ou mysqlWorkbench e em vez de uma ligação root/, fazemos ligação com root/app_user, usando a pass que definimos para esse user (clicar no butao Clear e testar ligação)
 
 ---
 
@@ -68,16 +68,6 @@ E outras estatísticas como:
 - `AVG`s
 - `COUNT`s  
   *(soma, média de profits e counts de vendas, etc)*
-
----
-
-## CENA EXTRA
-
-**TO_DO_LIST:** Column "Disponibilidade" na tabela Car, que podem dizer:
-
-```
-"Disponível" ou "Esgotado"
-```
 
 ---
 
