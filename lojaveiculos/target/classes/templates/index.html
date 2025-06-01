@@ -3,82 +3,66 @@
 <head>
     <meta charset="UTF-8" />
     <title>Loja de Veículos</title>
-    <style>
-        table, th, td { border:1px solid black; border-collapse:collapse; padding:5px; }
-        .stock-zero   { color:red; font-weight:bold; }
-        img.thumb     { max-width:120px; max-height:80px; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-
-<header>
-    <h1>Loja de Veículos Motorizados</h1>
-    <div>
+<div class="top-bar">
         <span th:if="${loggedUser != null}">
-            Olá, <b th:text="${loggedUser.nome}">User</b>!
-            [<a th:href="@{/logout}">Logout</a>]
-            <span th:if="${loggedUser.role == 'admin'}">
-                | <a th:href="@{/admin}">Painel Admin</a>
+                Olá, <b th:text="${loggedUser.nome}">User</b>!
+                [<a th:href="@{/logout}">Logout</a>]
+                <span th:if="${loggedUser.role == 'admin'}"> | <a th:href="@{/admin}">Painel Admin</a></span>
             </span>
-        </span>
-        <span th:if="${loggedUser == null}">
-            [<a th:href="@{/login}">Login</a>] ou
-            [<a th:href="@{/register}">Registar</a>]
-        </span>
-    </div>
-</header>
-<hr/>
+    <span th:if="${loggedUser == null}">
+                [<a th:href="@{/login}">Login</a>] ou [<a th:href="@{/register}">Registar</a>]
+            </span>
+</div>
+<div>
+    <div class="row">
+        <h1 class="Title_h1">
+            Loja de Veículos Motorizados
+        </h1>
+        <div class="filtro-container" >
+            <form class="filtro-form" th:action="@{/cars}" method="get">
+                <label for="category" class="filtro-label">Categoria:</label>
+                <select name="category" id="category" class="filtro-select">
+                    <option value="">-- todas --</option>
+                    <option>Carro</option>
+                    <option>Moto</option>
+                    <option>SUV</option>
+                </select>
 
-<form th:action="@{/cars}" method="get">
-    Categoria:
-    <select name="category">
-        <option value="">-- todas --</option>
-        <option>Carro</option><option>Moto</option><option>SUV</option>
-    </select>
-    <button type="submit">Filtrar</button>
-    &nbsp; Buscar:
-    <input type="text" name="search" placeholder="Marca ou modelo"/>
-    <button type="submit">Pesquisar</button>
-</form>
+                <button type="submit" class="filtro-botao">Filtrar</button>
+                <label for="search" class="filtro-label">Buscar:</label>
+                <input type="text" name="search" id="search" placeholder="Marca ou modelo" class="filtro-input" />
+                <button type="submit" class="filtro-botao">Pesquisar</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <p th:if="${filter != null}" th:text="${filter}"></p>
 
-<table>
-    <tr>
-        <th>Imagem</th><th>Marca</th><th>Modelo</th><th>Categoria</th>
-        <th>Preço</th><th>Stock</th><th></th>
-    </tr>
-
-    <tr th:each="car : ${cars}">
-        <!-- thumbnail (mostra só se existir imagem) -->
-        <td>
-            <img th:if="${car.imagePath != null}"
-                 th:src="@{'/images/' + ${car.imagePath}}"
-                 class="thumb" />
-        </td>
-
-        <td th:text="${car.brand}"></td>
-        <td th:text="${car.model}"></td>
-        <td th:text="${car.category}"></td>
-        <td th:text="${car.price}"></td>
-
-        <td th:classappend="${car.stock == 0} ? 'stock-zero'">
-            <span th:text="${car.stock}"></span>
-        </td>
-
-        <td>
-            <!-- botão Comprar segundo regras já existentes -->
-            <a th:if="${loggedUser != null and loggedUser.role == 'client'}"
-               th:href="@{'/buy/' + ${car.id}}">Comprar</a>
-            <a th:if="${loggedUser == null}" th:href="@{/login}">Comprar</a>
-            <span th:if="${loggedUser != null and loggedUser.role == 'vendor'}">(sem compra)</span>
-        </td>
-    </tr>
-
-    <tr th:unless="${cars.size()} > 0">
-        <td colspan="7">Nenhum veículo encontrado.</td>
-    </tr>
-</table>
-
+<div class="row">
+    <div th:each="car : ${cars}" class="col-md-4">
+        <div class="card">
+            <img class="card-img-top"
+                 th:if="${car.imagePath != null}"
+                 th:src="@{'/images/' + ${car.imagePath}}"/>
+            <div class="card-body">
+                <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
+                <p class="card-text" th:text="${car.category + ' - Stock: ' + car.stock}"></p>
+                <p>
+                    <a th:if="${loggedUser != null and loggedUser.role == 'client'}"
+                       th:href="@{'/buy/' + ${car.id}}"
+                       class="btn btn-primary" th:text="${car.price + ' €'}"></a>
+                    <a th:if="${loggedUser == null}" th:href="@{/login}"
+                       class="btn btn-primary" th:text="${car.price + ' €'}"></a>
+                    <span th:if="${loggedUser != null and loggedUser.role == 'vendor'}">(sem compra)</span>
+                </p>
+            </div>
+            <p th:unless="${cars.size()} > 0"><td colspan="6">Nenhum veículo encontrado.</td></p>
+        </div>
+    </div>
+</div>
 </body>
 </html>

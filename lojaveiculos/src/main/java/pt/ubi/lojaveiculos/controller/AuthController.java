@@ -76,6 +76,6 @@ public class AuthController {
         User u = (User) session.getAttribute("user");
         if (u != null) logService.logUser(u, "LOGOUT");
         session.invalidate();
-        return "redirect:/login";
+        return "redirect:/cars";
     }
 }
