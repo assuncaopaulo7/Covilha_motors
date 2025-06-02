@@ -1,0 +1,5 @@
+/*
+CREATE USER 'app_user'@'%' IDENTIFIED BY 'pass';
+GRANT ALL PRIVILEGES ON loja_veiculos.* TO 'app_user'@'%';
+FLUSH PRIVILEGES;
+/*

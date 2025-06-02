@@ -1,0 +1,234 @@
+em {
+    font-style: italic;
+}
+
+table {
+    background: #f5f5f5;
+    border-collapse: separate;
+    box-shadow: inset 0 1px 0 #fff;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 30px auto;
+    text-align: left;
+    width: 800px;
+}
+
+h2{
+    text-align: center;
+    font-size: 40px;
+}
+
+th {
+    background: url(https://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+    border-left: 1px solid #555;
+    border-right: 1px solid #777;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #333;
+    box-shadow: inset 0 1px 0 #999;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 15px;
+    position: relative;
+    text-shadow: 0 1px 0 #000;
+}
+
+td {
+    border-right: 1px solid #fff;
+    border-left: 1px solid #e8e8e8;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 10px 15px;
+    position: relative;
+    transition: all 300ms;
+}
+
+.td-text{
+    font-size:15px;
+}
+
+.car-update-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    width: 100%;
+    padding: 5px;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.input-group input {
+    flex: 1; /* ambos inputs ocupan el mismo espacio */
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.stock-zero {
+    border-color: red;
+    background-color: #ffe5e5;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-container button {
+    padding: 8px 16px;
+    background-color: #2e323e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+.form-buttons{
+    padding-bottom: 10px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 20px;
+}
+
+.links{
+    padding-right: 30px;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    user-select: none;
+}
+
+.links:hover {
+    text-decoration: underline;
+}
+
+.add-car-inline-container {
+    font-family: 'Montserrat', sans-serif;
+    padding-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    max-width: 100%;
+}
+
+.add-car-inline-container h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.add-car-inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.add-car-inline-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+}
+
+.add-car-inline-form input,
+.add-car-inline-form select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 120px;
+    transition: border 0.2s ease;
+}
+
+.add-car-inline-form input[type="file"] {
+    padding: 2px;
+}
+
+.add-car-inline-form input:focus,
+.add-car-inline-form select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.add-car-inline-form button {
+    background-color: #2e323e;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-car-inline-form button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    background:#f5f5f5;
+    border-collapse:separate;
+    font-size:12px;
+    line-height:24px;
+    margin:30px auto;
+    width: 100%;
+}
+th, td {
+    padding:10px 15px;
+    border:1px solid #ccc;
+}
+h2{ text-align:center; font-size:40px; }
+
+/* --- barra superior --- */
+.top-bar{ display:flex; justify-content:flex-end; padding:10px 20px; }
+.links  { margin-left:25px; font-weight:bold; color:#333; text-decoration:none; }
+.links:hover{text-decoration:underline;}
+
+/* --- formulários / botões --- */
+.add-car-inline-container{ background:#f9f9f9; padding:15px; border-radius:10px; }
+.add-car-inline-form{ display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end; }
+.add-car-inline-form label{ display:flex; flex-direction:column; font-size:14px; }
+.add-car-inline-form input,
+.add-car-inline-form select{ padding:6px 10px; border-radius:6px; border:1px solid #ccc; }
+
+.car-update-form{ display:flex; flex-direction:column; gap:8px; }
+.input-group{ display:flex; gap:10px; }
+.button-container{ display:flex; justify-content:flex-end; }
+button{ cursor:pointer; background:#2e323e; color:#fff; border:none; border-radius:6px; padding:6px 14px; }
+button:hover{ background:#0056b3; }
+
+.stock-zero{ border-color:red; background:#ffe5e5; }
+
+/* ---------------------------------------------------------
+   NOVO: painel flutuante de notificações de stock
+   --------------------------------------------------------- */
+.notificacoes-panel{
+    display:none;
+    position:fixed;
+    top:60px; right:20px;
+    width:300px; max-height:400px; overflow-y:auto;
+    background:#fff;
+    border:2px solid #444;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+    padding:1em; z-index:1000; border-radius:8px;
+}
+.notificacoes-panel h3{ margin-top:0 }
+.notificacao{ margin-bottom:.5em; font-weight:bold; color:#a60000; }
+.notificacoes-close{ text-align:right; margin:-10px -5px 10px 0; }
+.notificacoes-close button{
+    background:none; border:none; font-size:16px;
+    cursor:pointer; color:#999;
+}
+.notificacoes-close button:hover{ color:#000 }
