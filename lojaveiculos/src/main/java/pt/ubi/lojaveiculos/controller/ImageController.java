@@ -15,13 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * Exposes images stored in the “uploads/” directory at
- *   http://localhost:8080/images/{filename}
- *
- * Example: if imagePath = abc123.jpg, the tag <img src="/images/abc123.jpg">
- * will load that file.
- */
 @Controller
 public class ImageController {
 
