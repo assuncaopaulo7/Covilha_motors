@@ -176,3 +176,42 @@ td {
 .add-car-inline-form button:hover {
     background-color: #0056b3;
 }
+
+.notificacoes-panel {
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 2px solid #444;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 1em;
+    z-index: 1000;
+    border-radius: 8px;
+}
+.notificacoes-panel h3 {
+    margin-top: 0;
+}
+.notificacao {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    color: #a60000;
+}
+.notificacoes-close {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+.notificacoes-close button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #999;
+}
+.notificacoes-close button:hover {
+    color: #000;
+}

@@ -4,14 +4,38 @@
     <meta charset="UTF-8">
     <title>Painel Admin</title>
     <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <script>
+        function toggleNotificacoes() {
+            const panel = document.getElementById("notificacoesPanel");
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
+        }
+    </script>
 </head>
 <body>
 <div class="top-bar">
+    <a href="javascript:void(0)" onclick="toggleNotificacoes()" class="links">
+        Notificações (<span th:text="${notificacoes.size()}">0</span>)
+    </a>
     <a th:href="@{/admin/stats}" class="links">Ver estatísticas (em breve)</a>
     <a th:href="@{/admin/logs}" class="links">Logs</a>
     <a th:href="@{/cars}" class="links">Loja</a>
     <a th:href="@{/logout}" class="links">Logout</a>
 </div>
+
+<!-- Painel de notificações fixo -->
+<div id="notificacoesPanel" class="notificacoes-panel" th:if="${notificacoes}">
+    <div class="notificacoes-close">
+        <button onclick="toggleNotificacoes()">✖</button>
+    </div>
+    <h3>Notificações</h3>
+    <ul>
+        <li th:if="${#lists.isEmpty(notificacoes)}" style="font-style: italic; color: #555;">
+            Sem notificações
+        </li>
+        <li th:each="n : ${notificacoes}" th:text="${n}" class="notificacao"></li>
+    </ul>
+</div>
+
 
 <h2>Gestão de Veículos</h2>
 
@@ -102,7 +126,6 @@
         </td>
     </tr>
 </table>
-
 
 </body>
 </html>

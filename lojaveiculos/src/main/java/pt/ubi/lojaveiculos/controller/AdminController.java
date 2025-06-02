@@ -17,6 +17,10 @@ import java.nio.file.*;
 import java.util.Optional;
 import java.util.UUID;
 
+import java.util.List;
+import java.util.ArrayList;
+
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -29,7 +33,6 @@ public class AdminController {
                            LogService logService,
                            @Value("${car.upload-dir:uploads}") String dir)
             throws IOException {
-
         this.carRepo    = carRepo;
         this.logService = logService;
         this.uploadDir  = Paths.get(dir).toAbsolutePath();
@@ -41,7 +44,23 @@ public class AdminController {
     public String adminHome(HttpSession ses, Model m) {
         User u = (User) ses.getAttribute("user");
         if (u == null || !"admin".equals(u.getRole())) return "redirect:/login";
-        m.addAttribute("cars", carRepo.findAll());
+
+        List<Car> cars = carRepo.findAll();
+        m.addAttribute("cars", cars);
+
+        // Notificações de stock
+        List<String> notificacoes = new ArrayList<>();
+        for (Car car : cars) {
+            if (car.isDeleted()) continue; // ignora soft-deletados
+            if (car.getStock() == 0) {
+                notificacoes.add("⚠ Stock esgotado: " + car.getBrand() + " " + car.getModel());
+            } else if (car.getStock() < 10) {
+                notificacoes.add("Aviso: stock baixo de " + car.getBrand() + " " + car.getModel() +
+                        " (" + car.getStock() + " unidades)");
+            }
+        }
+        m.addAttribute("notificacoes", notificacoes);
+
         return "admin";
     }
 
@@ -85,15 +104,14 @@ public class AdminController {
 
         carRepo.findById(id).ifPresent(car -> {
             if (car.getImagePath() != null) {
-                try { Files.deleteIfExists(uploadDir.resolve(car.getImagePath())); }
-                catch (IOException ignored) { }
+                try { Files.deleteIfExists(uploadDir.resolve(car.getImagePath())); } catch (IOException ignored) { }
             }
             try {
                 String newName = saveImage(image);
                 car.setImagePath(newName);
                 carRepo.save(car);
-                logService.logCar(admin.getEmail(), "ATUALIZOU_IMAGEM",
-                        car, 0, String.valueOf(car.getPrice()));
+                logService.logCar(admin.getEmail(), "ATUALIZOU_IMAGEM", car, 0,
+                        String.valueOf(car.getPrice()));
             } catch (IOException ignored) { }
         });
         return "redirect:/admin";
@@ -110,32 +128,24 @@ public class AdminController {
         if (admin == null || !"admin".equals(admin.getRole())) return "redirect:/login";
 
         carRepo.findById(id).ifPresent(car -> {
+            int    oldStock  = car.getStock();
+            double oldPrice  = car.getPrice();
 
-            /* valores antigos antes da alteração */
-            int    oldStock = car.getStock();
-            double oldPrice = car.getPrice();
-
-            /* aplica alterações */
             car.setPrice(price);
             car.setStock(stock);
             carRepo.save(car);
 
-            /* 1) —— PRIMEIRO, se mudou o preço, regista ATUALIZOU —— */
+            /* -------- LOG STOCK MOVIMENTO -------- */
+            int diff = stock - oldStock;
+            if (diff > 0)
+                logService.logCar(admin.getEmail(), "INSERIU",  car, diff, String.valueOf(price));
+            if (diff < 0)
+                logService.logCar(admin.getEmail(), "RETIROU",  car, -diff, String.valueOf(price));
+
+            /* -------- LOG ALTERAÇÃO DE PREÇO ------ */
             if (Double.compare(oldPrice, price) != 0) {
                 String priceStr = oldPrice + " -> " + price;
-                logService.logCar(admin.getEmail(), "ATUALIZOU",
-                        car, stock, priceStr);
-            }
-
-            /* 2) —— DEPOIS, movimento de stock —— */
-            int diff = stock - oldStock;
-            if (diff > 0) {
-                logService.logCar(admin.getEmail(), "INSERIU",
-                        car, diff, String.valueOf(price));
-            }
-            if (diff < 0) {
-                logService.logCar(admin.getEmail(), "RETIROU",
-                        car, -diff, String.valueOf(price));
+                logService.logCar(admin.getEmail(), "ATUALIZOU", car, stock, priceStr);
             }
         });
         return "redirect:/admin";
@@ -148,9 +158,9 @@ public class AdminController {
         if (admin == null || !"admin".equals(admin.getRole())) return "redirect:/login";
 
         carRepo.findById(id).ifPresent(car -> {
-            logService.logCar(admin.getEmail(), "ELIMINOU", car,
-                    car.getStock(), String.valueOf(car.getPrice()));
-            car.setDeleted(true);      // soft-delete
+            logService.logCar(admin.getEmail(), "ELIMINOU", car, car.getStock(),
+                    String.valueOf(car.getPrice()));
+            car.setDeleted(true);           // soft-delete
             carRepo.save(car);
         });
         return "redirect:/admin";
