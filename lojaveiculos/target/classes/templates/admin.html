@@ -5,91 +5,90 @@
     <title>Painel Admin</title>
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <script>
-        function toggleNotificacoes () {
-            const p = document.getElementById('notificacoesPanel');
-            p.style.display = (p.style.display === 'block') ? 'none' : 'block';
+        function toggleNotificacoes() {
+            const panel = document.getElementById("notificacoesPanel");
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
         }
     </script>
 </head>
 <body>
-
-<!-- ============ BARRA SUPERIOR ============ -->
 <div class="top-bar">
-    <a href="javascript:void(0)" class="links"
-       onclick="toggleNotificacoes()">
+    <a href="javascript:void(0)" onclick="toggleNotificacoes()" class="links">
         Notificações (<span th:text="${notificacoes.size()}">0</span>)
     </a>
-
     <a th:href="@{/admin/stats}" class="links">Ver estatísticas (em breve)</a>
-    <a th:href="@{/admin/logs}"  class="links">Logs</a>
-    <a th:href="@{/cars}"        class="links">Loja</a>
-
-    <a th:href="@{/admin/db/export}" class="links">Exportar&nbsp;BD</a>
-
-    <form th:action="@{/admin/db/import}" method="post"
-          enctype="multipart/form-data" style="display:inline">
-        <input type="file" name="file" accept=".sql"
-               onchange="this.form.submit()"
-               style="position:absolute; left:-9999px;">
-        <a href="#" class="links"
-           onclick="this.previousElementSibling.click(); return false;">
-            Importar&nbsp;BD
-        </a>
-    </form>
-
+    <a th:href="@{/admin/logs}" class="links">Logs</a>
+    <a th:href="@{/cars}" class="links">Loja</a>
     <a th:href="@{/logout}" class="links">Logout</a>
 </div>
 
-<!-- ===== PAINEL FLUTUANTE DE NOTIFICAÇÕES ===== -->
-<div id="notificacoesPanel" class="notificacoes-panel">
+<!-- Painel de notificações fixo -->
+<div id="notificacoesPanel" class="notificacoes-panel" th:if="${notificacoes != null}">
     <div class="notificacoes-close">
         <button onclick="toggleNotificacoes()">✖</button>
     </div>
     <h3>Notificações</h3>
     <ul>
-        <li th:if="${#lists.isEmpty(notificacoes)}"
-            style="font-style:italic; color:#555;">
+        <li th:if="${#lists.isEmpty(notificacoes)}" style="font-style: italic; color: #555;">
             Sem notificações
         </li>
-        <li th:each="n : ${notificacoes}"
-            th:text="${n}" class="notificacao"></li>
+        <li th:each="n : ${notificacoes}" th:text="${n}" class="notificacao"></li>
     </ul>
 </div>
 
 <h2>Gestão de Veículos</h2>
 
-<!-- ===== FORMULÁRIO ADICIONAR ===== -->
+<form th:action="@{/admin}" method="get" class="search-form">
+    <select name="filterField" required>
+        <option value="marca" th:selected="${filterField == 'marca'}">Marca</option>
+        <option value="modelo" th:selected="${filterField == 'modelo'}">Modelo</option>
+        <option value="categoria" th:selected="${filterField == 'categoria'}">Categoria</option>
+        <option value="preco_abaixo" th:selected="${filterField == 'preco_abaixo'}">Preço abaixo de(ou igual)</option>
+        <option value="preco_acima" th:selected="${filterField == 'preco_acima'}">Preço acima de(ou igual)</option>
+        <option value="stock_abaixo" th:selected="${filterField == 'stock_abaixo'}">Stock abaixo de(ou igual)</option>
+        <option value="stock_acima" th:selected="${filterField == 'stock_acima'}">Stock acima de(ou igual)</option>
+    </select>
+
+    <input type="text" name="search" placeholder="Termo de pesquisa"
+           th:value="${search}" required />
+    <button type="submit">Pesquisar</button>
+    <a th:href="@{/admin}" class="clear-search">Limpar</a>
+</form>
+
+
+
+
 <div class="add-car-inline-container">
     <h3>Adicionar novo</h3>
-    <form th:action="@{/admin/cars}" method="post"
-          enctype="multipart/form-data" class="add-car-inline-form">
+    <form th:action="@{/admin/cars}" method="post" enctype="multipart/form-data" class="add-car-inline-form">
         <label>Marca
-            <input type="text" name="brand" required>
+            <input type="text" name="brand" required />
         </label>
         <label>Modelo
-            <input type="text" name="modelCar" required>
+            <input type="text" name="modelCar" required />
         </label>
         <label>Categoria
             <select name="category">
-                <option>Carro</option><option>Moto</option><option>SUV</option>
+                <option>Carro</option>
+                <option>Moto</option>
+                <option>SUV</option>
             </select>
         </label>
         <label>Preço
-            <input type="number" step="0.01" name="price" min="0" required>
+            <input type="number" step="0.01" name="price" min="0" required />
         </label>
         <label>Stock
-            <input type="number" name="stock" min="0" required>
+            <input type="number" name="stock" min="0" required />
         </label>
         <label>Imagem
-            <input type="file" name="image" accept="image/*">
+            <input type="file" name="image" accept="image/*" />
         </label>
         <button type="submit">Adicionar</button>
     </form>
 </div>
 
-<hr>
+<hr/>
 
-<!-- ===== LISTA DE CARROS ===== -->
 <table>
     <tr>
         <th>ID</th><th>Marca</th><th>Modelo</th><th>Categoria</th>
@@ -97,21 +96,18 @@
     </tr>
 
     <tr th:each="car : ${cars}">
-        <td th:text="${car.id}"    class="td-text"></td>
+        <td th:text="${car.id}" class="td-text"></td>
         <td th:text="${car.brand}" class="td-text"></td>
         <td th:text="${car.model}" class="td-text"></td>
         <td th:text="${car.category}" class="td-text"></td>
 
-        <!-- ---- preço / stock (form inline) ---- -->
+        <!-- formulário Atualizar abrange inputs + botão -->
         <td colspan="2">
-            <form th:action="@{'/admin/cars/' + ${car.id} + '/update'}"
-                  method="post" class="car-update-form">
+            <form th:action="@{'/admin/cars/' + ${car.id} + '/update'}" method="post" class="car-update-form">
                 <div class="input-group">
-                    <input type="number" step="0.01" name="price"
-                           th:value="${car.price}" min="0">
-                    <input type="number" name="stock"
-                           th:value="${car.stock}" min="0"
-                           th:classappend="${car.stock==0} ? 'stock-zero'">
+                    <input type="number" step="0.01" name="price" th:value="${car.price}" min="0" placeholder="Preço" />
+                    <input type="number" name="stock" th:value="${car.stock}" min="0"
+                           th:classappend="${car.stock == 0} ? 'stock-zero' : ''" placeholder="Stock" />
                 </div>
                 <div class="button-container">
                     <button type="submit">Atualizar</button>
@@ -119,27 +115,27 @@
             </form>
         </td>
 
-        <!-- ---- upload imagem  / delete ---- -->
         <td>
+            <!-- upload / substituir imagem -->
             <form th:action="@{'/admin/cars/' + ${car.id} + '/image'}"
-                  method="post" enctype="multipart/form-data"
-                  class="form-buttons">
+                  method="post" enctype="multipart/form-data" class="form-buttons">
+
                 <div class="button-container">
                     <input type="file" name="image" accept="image/*"
-                           style="position:absolute; left:-10000px;"
-                           onchange="this.form.submit()">
-                    <button type="button"
-                            onclick="this.previousElementSibling.click();">
-                        Imagem
+                           style="position: absolute; top: 1000%; left: 1000%;"
+                           onchange="this.form.submit()" />
+
+                    <button type="button" onclick="this.previousElementSibling.click();">
+                        Upload imagem
                     </button>
                 </div>
             </form>
 
+            <!-- eliminar carro -->
             <form th:action="@{'/admin/cars/' + ${car.id} + '/delete'}"
                   method="post" class="form-buttons">
                 <div class="button-container">
-                    <button type="submit"
-                            onclick="return confirm('Eliminar este veículo?');">
+                    <button type="submit" onclick="return confirm('Eliminar este veículo?');">
                         Eliminar
                     </button>
                 </div>
