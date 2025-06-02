@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Estatísticas de Vendas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .top-bar {
+            background-color: #2c3e50;
+            padding: 15px;
+            text-align: right;
+            color: white;
+            font-size: 16px;
+        }
+
+        .top-bar .links {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .top-bar .links:hover {
+            text-decoration: underline;
+        }
+
+        .filter-box {
+            background: #ffffff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            width: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-box input[type="date"],
+        .filter-box button,
+        .filter-box a {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .filter-box button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .filter-box button:hover {
+            background-color: #2980b9;
+        }
+
+        .filter-box a {
+            color: #c0392b;
+            text-decoration: none;
+        }
+
+        .filter-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* Galeria de gráficos */
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .chart-card {
+            flex: 1 1 calc(50% - 40px);
+            min-width: 400px;
+            max-width: 600px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 300px;
+        }
+
+        .data-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .data-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Para telas menores */
+        @media (max-width: 900px) {
+            .chart-card {
+                flex: 1 1 100%;
+                min-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a th:href="@{/admin}" class="links">Voltar ao Painel</a>
+    <a th:href="@{/logout}" class="links">Logout</a>
+</div>
+
+<h1 style="text-align:center;">Estatísticas de Vendas</h1>
+
+<div th:if="${error}" style="color:red; text-align:center; margin-bottom: 20px;">
+    <p th:text="${error}"></p>
+</div>
+
+<!-- Galeria de gráficos -->
+<div class="gallery-container">
+    <!-- Vendas por Marca -->
+    <div class="chart-card">
+        <h2>Vendas por Marca</h2>
+        <canvas id="brandChart"></canvas>
+        <table class="data-table" th:if="${salesByBrand}">
+            <thead>
+            <tr>
+                <th>Marca</th>
+                <th>Quantidade de Vendas</th>
+                <th>Total (€)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${salesByBrand}">
+                <td th:text="${item.brand}">Marca</td>
+                <td th:text="${item.count}">0</td>
+                <td th:text="${#numbers.formatCurrency(item.total)}">€0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Vendas Mensais -->
+    <div class="chart-card">
+        <h2>Vendas Mensais</h2>
+        <canvas id="monthlySalesChart"></canvas>
+        <table class="data-table" th:if="${monthlySales}">
+            <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Ano</th>
+                <th>Quantidade</th>
+                <th>Total Vendido</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${monthlySales}">
+                <td th:text="${item.month}">0</td>
+                <td th:text="${item.year}">0</td>
+                <td th:text="${item.count}">0</td>
+                <td th:text="${#numbers.formatCurrency(item.total)}">€0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Vendas por Categoria -->
+    <div class="chart-card">
+        <h2>Vendas por Categoria</h2>
+        <table class="data-table" th:if="${salesByCategory}">
+            <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Quantidade</th>
+                <th>Total (€)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${salesByCategory}">
+                <td th:text="${item.category}">Categoria</td>
+                <td th:text="${item.count}">0</td>
+                <td th:text="${#numbers.formatCurrency(item.total)}">€0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Top Clientes -->
+    <div class="chart-card">
+        <h2>Top 5 Clientes</h2>
+        <table class="data-table" th:if="${topClients}">
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Compras</th>
+                <th>Total Gasto (€)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="client : ${topClients}">
+                <td th:text="${client.nome}">Cliente</td>
+                <td th:text="${client.count}">0</td>
+                <td th:text="${#numbers.formatCurrency(client.total)}">€0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Vendas filtradas (por data) - Full width -->
+<div class="chart-card" style="max-width: 100%; margin: 20px auto;" th:if="${filteredSales}">
+    <h2>Vendas Filtradas</h2>
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Modelo do Carro</th>
+            <th>Quantidade</th>
+            <th>Total (€)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sale : ${filteredSales}">
+            <td th:text="${sale[0]}">2025-01-01</td>
+            <td th:text="${sale[1]}">Modelo</td>
+            <td th:text="${sale[2]}">0</td>
+            <td th:text="${#numbers.formatCurrency(sale[3])}">€0,00</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:inline="javascript">
+    /* Vendas por Marca - Pie Chart */
+    let brandLabels = /*[[${salesByBrand.![brand]}]]*/ [];
+    let brandData = /*[[${salesByBrand.![total]}]]*/ [];
+
+    new Chart(document.getElementById('brandChart'), {
+        type: 'pie',
+        data: {
+            labels: brandLabels,
+            datasets: [{
+                label: 'Vendas por Marca',
+                data: brandData,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#C9CBCF', '#FF6384', '#36A2EB', '#FFCE56'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    /* Vendas Mensais - Bar Chart */
+    let monthlyLabels = /*[[${monthlySales.![month]}]]*/ [];
+    let monthlyData = /*[[${monthlySales.![total]}]]*/ [];
+
+    new Chart(document.getElementById('monthlySalesChart'), {
+        type: 'bar',
+        data: {
+            labels: monthlyLabels.map(m => 'Mês ' + m),
+            datasets: [{
+                label: 'Total Vendido (€)',
+                data: monthlyData,
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
