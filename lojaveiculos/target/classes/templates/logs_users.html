@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Logs Utilizadores</title>
+    <style>
+        table, th, td { border:1px solid black; border-collapse:collapse; padding:5px; }
+    </style>
+</head>
+<body>
+<h2>Atividade de Utilizadores</h2>
+
+<table>
+    <tr><th>Hora</th><th>Nome</th><th>Email</th><th>Ação</th></tr>
+
+    <tr th:each="l : ${logs}">
+        <td th:text="${#temporals.format(l.timestamp,'HH:mm:ss')}"></td>
+        <td th:text="${l.name}"></td>
+        <td th:text="${l.email}"></td>
+
+        <td th:switch="${l.action}">
+            <span th:case="'LOGIN'"      style="color:green;" th:text="${l.action}"></span>
+            <span th:case="'LOGOUT'"     style="color:red;"   th:text="${l.action}"></span>
+            <span th:case="'REGISTERED'" style="color:blue;"  th:text="${l.action}"></span>
+        </td>
+    </tr>
+</table>
+
+<br/>
+
+<!-- botão eliminar logs -->
+<form th:action="@{/admin/logs/users/clear}" method="post"
+      onsubmit="return confirm('Eliminar todos os logs de utilizadores?');">
+    <button type="submit">Eliminar logs</button>
+</form>
+
+<br/>
+<a th:href="@{/admin/logs}">Voltar</a>
+</body>
+</html>

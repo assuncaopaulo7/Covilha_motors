@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Logs Veículos</title>
+    <style>
+        table, th, td { border:1px solid black; border-collapse:collapse; padding:5px; }
+    </style>
+</head>
+<body>
+<h2>Atividade sobre Veículos</h2>
+
+<table>
+    <tr><th>Hora</th><th>Email</th><th>Ação</th><th>Carro</th><th>Nº Veículos</th></tr>
+
+    <tr th:each="l : ${logs}">
+        <td th:text="${#temporals.format(l.timestamp,'HH:mm:ss')}"></td>
+        <td th:text="${l.email}"></td>
+
+        <td th:switch="${l.action}">
+            <span th:case="'CRIOU'"    style="color:darkolivegreen;" th:text="${l.action}"></span>
+            <span th:case="'INSERIU'"  style="color:green;" th:text="${l.action}"></span>
+            <span th:case="'COMPROU'"  style="color:blue;"  th:text="${l.action}"></span>
+            <span th:case="'RETIROU'"  style="color:red;"   th:text="${l.action}"></span>
+            <span th:case="'ELIMINOU'" style="color:indianred;"   th:text="${l.action}"></span>
+        </td>
+
+        <td th:text="${l.carBrand + ' ' + l.carModel}"></td>
+        <td th:text="${l.quantity}"></td>
+    </tr>
+</table>
+
+<br/>
+
+<!-- botão eliminar logs -->
+<form th:action="@{/admin/logs/cars/clear}" method="post"
+      onsubmit="return confirm('Eliminar todos os logs de veículos?');">
+    <button type="submit">Eliminar logs</button>
+</form>
+
+<br/>
+<a th:href="@{/admin/logs}">Voltar</a>
+</body>
+</html>
