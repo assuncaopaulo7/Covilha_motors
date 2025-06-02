@@ -19,12 +19,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
-/**
- * Painel de administração:
- *   • gestão de veículos (CRUD + upload de imagem)
- *   • exportar / importar base de dados
- *   • notificações de baixo stock
- */
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
