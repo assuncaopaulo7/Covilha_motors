@@ -9,12 +9,7 @@ import pt.ubi.lojaveiculos.service.LogService;
 
 import java.util.List;
 
-/**
- * Runs ONCE when Spring Boot finishes starting.
- * For every user whose last recorded action is still LOGIN,
- * we immediately create a synthetic LOGOUT to close the gap
- * left by an abrupt server shutdown.
- */
+
 @Component
 public class StartupSessionReconciler {
 
