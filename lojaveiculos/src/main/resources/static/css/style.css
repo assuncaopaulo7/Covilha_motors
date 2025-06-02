@@ -37,7 +37,7 @@ h1 {
 .filtro-container {
     width: 100%;
     display: flex;
-    justify-content: flex-start; /* Alinea el contenido a la izquierda */
+    justify-content: flex-start;
     margin-bottom: 30px;
     margin-left: 30px;
 }
