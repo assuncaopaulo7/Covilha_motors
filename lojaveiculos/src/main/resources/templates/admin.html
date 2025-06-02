@@ -124,10 +124,10 @@
             <form th:action="@{'/admin/cars/' + ${car.id} + '/image'}"
                   method="post" enctype="multipart/form-data"
                   class="form-buttons">
-                <input type="file" name="image" accept="image/*"
-                       style="position:absolute; left:-10000px;"
-                       onchange="this.form.submit()">
                 <div class="button-container">
+                    <input type="file" name="image" accept="image/*"
+                           style="position:absolute; left:-10000px;"
+                           onchange="this.form.submit()">
                     <button type="button"
                             onclick="this.previousElementSibling.click();">
                         Imagem
