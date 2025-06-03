@@ -12,13 +12,31 @@
     </script>
 </head>
 <body>
+
 <div class="top-bar">
-    <a href="javascript:void(0)" onclick="toggleNotificacoes()" class="links">
+    <a href="javascript:void(0)" class="links"
+       onclick="toggleNotificacoes()">
         Notificações (<span th:text="${notificacoes.size()}">0</span>)
     </a>
+
     <a th:href="@{/admin/stats}" class="links">Ver estatísticas (em breve)</a>
-    <a th:href="@{/admin/logs}" class="links">Logs</a>
-    <a th:href="@{/cars}" class="links">Loja</a>
+    <a th:href="@{/admin/logs}"  class="links">Logs</a>
+    <a th:href="@{/cars}"        class="links">Loja</a>
+
+    <!--  Exportar & Importar BD voltaram -->
+    <a th:href="@{/admin/db/export}" class="links">Exportar&nbsp;BD</a>
+
+    <form th:action="@{/admin/db/import}" method="post"
+          enctype="multipart/form-data" style="display:inline">
+        <input type="file" name="file" accept=".sql"
+               onchange="this.form.submit()"
+               style="position:absolute; left:-9999px;">
+        <a href="#" class="links"
+           onclick="this.previousElementSibling.click(); return false;">
+            Importar&nbsp;BD
+        </a>
+    </form>
+
     <a th:href="@{/logout}" class="links">Logout</a>
 </div>
 
