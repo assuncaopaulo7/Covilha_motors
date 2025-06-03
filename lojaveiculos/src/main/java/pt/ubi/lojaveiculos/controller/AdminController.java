@@ -2,7 +2,10 @@ package pt.ubi.lojaveiculos.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,239 +19,233 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
+/**
+ * Painel Admin:
+ * • Pesquisa avançada - marca/modelo/categoria/preço/stock
+ * • CRUD de veículos (imagem & soft-delete)
+ * • Exportar + Importar base de dados
+ * • Notificações de baixo stock
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     private final CarRepository carRepo;
-    private final LogService logService;
-    private final Path uploadDir;
+    private final LogService    logService;
+    private final Path          uploadDir;
+
+    /* credenciais BD para mysqldump/mysql */
+    private final String dbUser, dbPass, dbName;
 
     public AdminController(CarRepository carRepo,
-                           LogService logService,
-                           @Value("${car.upload-dir:uploads}") String dir) throws IOException {
-        this.carRepo = carRepo;
+                           LogService    logService,
+                           @Value("${car.upload-dir:uploads}") String dir,
+                           @Value("${spring.datasource.username}") String dbUser,
+                           @Value("${spring.datasource.password}") String dbPass,
+                           @Value("${spring.datasource.url}")      String dbUrl) throws IOException {
+
+        this.carRepo    = carRepo;
         this.logService = logService;
-        this.uploadDir = Paths.get(dir).toAbsolutePath();
-        Files.createDirectories(uploadDir);
+        this.uploadDir  = Files.createDirectories(Paths.get(dir).toAbsolutePath());
+
+        this.dbUser = dbUser;
+        this.dbPass = dbPass;
+        this.dbName = dbUrl.substring(dbUrl.lastIndexOf('/') + 1).split("\\?")[0]; // extrai nome da BD
     }
 
-    /* ---------- PAINEL PRINCIPAL ---------- */
+    /* ===============================================================
+       PÁGINA PRINCIPAL  (/admin)
+       =============================================================== */
     @GetMapping
     public String adminHome(HttpSession ses,
-                            @RequestParam(name = "filterField", required = false) String filterField,
-                            @RequestParam(name = "search", required = false) String search,
-                            Model model) {
+                            @RequestParam(name="filterField", required=false) String filterField,
+                            @RequestParam(name="search",      required=false) String search,
+                            Model m) {
+
         User u = (User) ses.getAttribute("user");
-        if (u == null || !"admin".equals(u.getRole())) {
-            return "redirect:/login";
-        }
+        if (u == null || !"admin".equals(u.getRole())) return "redirect:/login";
 
         List<Car> cars;
-
         if (search != null && !search.trim().isEmpty() && filterField != null) {
             switch (filterField) {
-                case "marca":
-                    cars = carRepo.findByBrandContainingIgnoreCase(search);
-                    break;
-                case "modelo":
-                    cars = carRepo.findByModelContainingIgnoreCase(search);
-                    break;
-                case "categoria":
-                    cars = carRepo.findByCategoryContainingIgnoreCase(search);
-                    break;
-                case "preco_abaixo":
-                    try {
-                        double preco = Double.parseDouble(search);
-                        cars = carRepo.findByPriceLessThanEqual(preco);
-                    } catch (NumberFormatException e) {
-                        cars = new ArrayList<>();
-                    }
-                    break;
-                case "preco_acima":
-                    try {
-                        double preco = Double.parseDouble(search);
-                        cars = carRepo.findByPriceGreaterThanEqual(preco);
-                    } catch (NumberFormatException e) {
-                        cars = new ArrayList<>();
-                    }
-                    break;
-                case "stock_abaixo":
-                    try {
-                        int stock = Integer.parseInt(search);
-                        cars = carRepo.findByStockLessThanEqual(stock);
-                    } catch (NumberFormatException e) {
-                        cars = new ArrayList<>();
-                    }
-                    break;
-                case "stock_acima":
-                    try {
-                        int stock = Integer.parseInt(search);
-                        cars = carRepo.findByStockGreaterThanEqual(stock);
-                    } catch (NumberFormatException e) {
-                        cars = new ArrayList<>();
-                    }
-                    break;
-                default:
-                    cars = carRepo.findAllActive();
+                case "marca"        -> cars = carRepo.findByBrandContainingIgnoreCase(search);
+                case "modelo"       -> cars = carRepo.findByModelContainingIgnoreCase(search);
+                case "categoria"    -> cars = carRepo.findByCategoryContainingIgnoreCase(search);
+                case "preco_abaixo" -> cars = tryDouble(search)
+                        .map(carRepo::findByPriceLessThanEqual)
+                        .orElse(List.of());
+                case "preco_acima"  -> cars = tryDouble(search)
+                        .map(carRepo::findByPriceGreaterThanEqual)
+                        .orElse(List.of());
+                case "stock_abaixo" -> cars = tryInt(search)
+                        .map(carRepo::findByStockLessThanEqual)
+                        .orElse(List.of());
+                case "stock_acima"  -> cars = tryInt(search)
+                        .map(carRepo::findByStockGreaterThanEqual)
+                        .orElse(List.of());
+                default             -> cars = carRepo.findAllActive();
             }
-            // apesar de @Where ignorar deleted=true, garantimos que não venham deletados
-            cars.removeIf(Car::isDeleted);
+            cars.removeIf(Car::isDeleted);   // salvaguarda extra
         } else {
             cars = carRepo.findAllActive();
         }
 
-        model.addAttribute("cars", cars);
-
-        // Notificações de stock
-        List<String> notificacoes = new ArrayList<>();
-        for (Car car : cars) {
-            if (car.getStock() == 0) {
-                notificacoes.add("⚠ Stock esgotado: " + car.getBrand() + " " + car.getModel());
-            } else if (car.getStock() < 10) {
-                notificacoes.add(
-                        "Aviso: stock baixo de " + car.getBrand() + " " + car.getModel() +
-                                " (" + car.getStock() + " unidades)"
-                );
-            }
+        /* notificações de stock */
+        List<String> notifs = new ArrayList<>();
+        for (Car c : cars) {
+            if (c.getStock() == 0)
+                notifs.add("⚠ Stock esgotado: " + c.getBrand() + " " + c.getModel());
+            else if (c.getStock() < 10)
+                notifs.add("Aviso: stock baixo de " + c.getBrand() + " "
+                        + c.getModel() + " (" + c.getStock() + ")");
         }
-        model.addAttribute("notificacoes", notificacoes);
 
-        model.addAttribute("search", search);                   // mantém termo no input
-        model.addAttribute("filterField", filterField);         // mantém dropdown selecionado
-
+        m.addAttribute("cars", cars);
+        m.addAttribute("search", search == null ? "" : search);
+        m.addAttribute("filterField", filterField == null ? "" : filterField);
+        m.addAttribute("notificacoes", notifs);
         return "admin";
     }
 
-    /* ---------- CRIAR NOVO CARRO ---------- */
-    @PostMapping(path = "/cars", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String addCar(HttpSession ses,
+    /* ===============================================================
+       EXPORTAR BASE DE DADOS  (/admin/db/export)
+       =============================================================== */
+    @GetMapping("/db/export")
+    public ResponseEntity<FileSystemResource> exportDb(HttpSession s)
+            throws IOException, InterruptedException {
+
+        if (!isAdmin(s)) return ResponseEntity.status(403).build();
+
+        Path dump = Files.createTempFile("loja_veiculos-", ".sql");
+        int code = new ProcessBuilder("mysqldump",
+                "-u"+dbUser,"-p"+dbPass, dbName)
+                .redirectOutput(dump.toFile())
+                .start().waitFor();
+        if (code != 0) { Files.deleteIfExists(dump);
+            return ResponseEntity.internalServerError().build(); }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"loja_veiculos.sql\"")
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(new FileSystemResource(dump));
+    }
+
+    /* ===============================================================
+       IMPORTAR BASE DE DADOS  (/admin/db/import)
+       =============================================================== */
+    @PostMapping(path="/db/import", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String importDb(HttpSession s,
+                           @RequestParam("file") MultipartFile file)
+            throws IOException, InterruptedException {
+
+        if (!isAdmin(s) || file.isEmpty()) return "redirect:/admin";
+
+        Path tmp = Files.createTempFile("upload-", ".sql");
+        Files.copy(file.getInputStream(), tmp, StandardCopyOption.REPLACE_EXISTING);
+
+        int code = new ProcessBuilder("mysql",
+                "-u"+dbUser,"-p"+dbPass, dbName)
+                .redirectInput(tmp.toFile())
+                .start().waitFor();
+        Files.deleteIfExists(tmp);
+        return (code == 0) ? "redirect:/admin" : "redirect:/admin?err=import";
+    }
+
+    /* ===============================================================
+       CRUD DE VEÍCULOS  (mesma lógica de antes)
+       =============================================================== */
+    @PostMapping(path="/cars", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String addCar(HttpSession s,
                          @RequestParam String brand,
-                         @RequestParam("modelCar") String modelCar,
+                         @RequestParam("modelCar") String model,
                          @RequestParam String category,
                          @RequestParam double price,
                          @RequestParam int stock,
-                         @RequestParam("image") MultipartFile image) throws IOException {
+                         @RequestParam("image") MultipartFile img) throws IOException {
 
-        User admin = (User) ses.getAttribute("user");
-        if (admin == null || !"admin".equals(admin.getRole())) {
-            return "redirect:/login";
-        }
-
-        String savedName = saveImage(image);
+        if (!isAdmin(s)) return "redirect:/login";
 
         Car car = new Car();
-        car.setBrand(brand);
-        car.setModel(modelCar);
-        car.setCategory(category);
-        car.setPrice(price);
-        car.setStock(stock);
-        car.setImagePath(savedName);
-        car.setDeleted(false);
+        car.setBrand(brand); car.setModel(model); car.setCategory(category);
+        car.setPrice(price); car.setStock(stock); car.setImagePath(saveImage(img));
         carRepo.save(car);
-
-        logService.logCar(admin.getEmail(), "CRIOU", car, stock, String.valueOf(price));
+        logService.logCar(getEmail(s),"CRIOU",car,stock,String.valueOf(price));
         return "redirect:/admin";
     }
 
-    /* ---------- SUBSTITUIR / ADICIONAR IMAGEM ---------- */
-    @PostMapping(path = "/cars/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String uploadImage(HttpSession ses,
-                              @PathVariable Long id,
-                              @RequestParam("image") MultipartFile image) throws IOException {
+    @PostMapping(path="/cars/{id}/image", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String uploadImage(HttpSession s,@PathVariable Long id,
+                              @RequestParam("image") MultipartFile img) throws IOException {
 
-        User admin = (User) ses.getAttribute("user");
-        if (admin == null || !"admin".equals(admin.getRole())) {
-            return "redirect:/login";
-        }
-        if (image.isEmpty()) {
-            return "redirect:/admin";
-        }
-
-        Optional<Car> carOpt = carRepo.findById(id);
-        if (carOpt.isPresent()) {
-            Car car = carOpt.get();
-            if (car.getImagePath() != null) {
-                try {
-                    Files.deleteIfExists(uploadDir.resolve(car.getImagePath()));
-                } catch (IOException ignored) { }
-            }
+        if (!isAdmin(s) || img.isEmpty()) return "redirect:/admin";
+        carRepo.findById(id).ifPresent(c -> {
+            try { if (c.getImagePath()!=null)
+                Files.deleteIfExists(uploadDir.resolve(c.getImagePath())); }
+            catch(IOException ignored){}
             try {
-                String newName = saveImage(image);
-                car.setImagePath(newName);
-                carRepo.save(car);
-                logService.logCar(admin.getEmail(), "ATUALIZOU_IMAGEM", car, 0,
-                        String.valueOf(car.getPrice()));
-            } catch (IOException ignored) { }
-        }
+                c.setImagePath(saveImage(img)); carRepo.save(c);
+                logService.logCar(getEmail(s),"ATUALIZOU_IMAGEM",
+                        c,0,String.valueOf(c.getPrice()));
+            } catch(IOException ignored){}
+        });
         return "redirect:/admin";
     }
 
-    /* ---------- ATUALIZAR PREÇO / STOCK ---------- */
     @PostMapping("/cars/{id}/update")
-    public String updateCar(HttpSession ses,
+    public String updateCar(HttpSession s,
                             @PathVariable Long id,
                             @RequestParam double price,
                             @RequestParam int stock) {
 
-        User admin = (User) ses.getAttribute("user");
-        if (admin == null || !"admin".equals(admin.getRole())) {
-            return "redirect:/login";
-        }
+        if (!isAdmin(s)) return "redirect:/login";
+        carRepo.findById(id).ifPresent(c -> {
+            int diff = stock - c.getStock();
+            double old = c.getPrice();
+            c.setPrice(price); c.setStock(stock); carRepo.save(c);
 
-        carRepo.findById(id).ifPresent(car -> {
-            int oldStock = car.getStock();
-            double oldPrice = car.getPrice();
-
-            car.setPrice(price);
-            car.setStock(stock);
-            carRepo.save(car);
-
-            int diff = stock - oldStock;
-            if (diff > 0) {
-                logService.logCar(admin.getEmail(), "INSERIU", car, diff, String.valueOf(price));
-            }
-            if (diff < 0) {
-                logService.logCar(admin.getEmail(), "RETIROU", car, -diff, String.valueOf(price));
-            }
-            if (Double.compare(oldPrice, price) != 0) {
-                String priceStr = oldPrice + " -> " + price;
-                logService.logCar(admin.getEmail(), "ATUALIZOU", car, stock, priceStr);
-            }
+            if (Double.compare(old,price)!=0)
+                logService.logCar(getEmail(s),"ATUALIZOU",c,stock,old+" -> "+price);
+            if (diff>0) logService.logCar(getEmail(s),"INSERIU", c,diff,String.valueOf(price));
+            if (diff<0) logService.logCar(getEmail(s),"RETIROU", c,-diff,String.valueOf(price));
         });
         return "redirect:/admin";
     }
 
-    /* ---------- ELIMINAR CARRO (SOFT DELETE) ---------- */
     @PostMapping("/cars/{id}/delete")
-    public String deleteCar(HttpSession ses, @PathVariable Long id) {
-        User admin = (User) ses.getAttribute("user");
-        if (admin == null || !"admin".equals(admin.getRole())) {
-            return "redirect:/login";
-        }
-
-        carRepo.findById(id).ifPresent(car -> {
-            logService.logCar(admin.getEmail(), "ELIMINOU", car, car.getStock(),
-                    String.valueOf(car.getPrice()));
-            car.setDeleted(true);
-            carRepo.save(car);
+    public String deleteCar(HttpSession s,@PathVariable Long id){
+        if (!isAdmin(s)) return "redirect:/login";
+        carRepo.findById(id).ifPresent(c->{
+            logService.logCar(getEmail(s),"ELIMINOU",c,c.getStock(),String.valueOf(c.getPrice()));
+            c.setDeleted(true); carRepo.save(c);
         });
         return "redirect:/admin";
     }
 
-    /* ---------- utilitário para gravar ficheiro ---------- */
-    private String saveImage(MultipartFile img) throws IOException {
-        if (img == null || img.isEmpty()) {
-            return null;
-        }
-        String originalFilename = Optional.ofNullable(img.getOriginalFilename()).orElse("");
-        String ext = "";
-        int dotIndex = originalFilename.lastIndexOf('.');
-        if (dotIndex >= 0) {
-            ext = originalFilename.substring(dotIndex);
-        }
-        String saved = UUID.randomUUID() + ext;
-        Files.copy(img.getInputStream(), uploadDir.resolve(saved), StandardCopyOption.REPLACE_EXISTING);
-        return saved;
+    /* =============== helpers =============== */
+    private boolean isAdmin(HttpSession s){
+        User u=(User)s.getAttribute("user");
+        return u!=null && "admin".equals(u.getRole());
+    }
+    private String getEmail(HttpSession s){
+        User u=(User)s.getAttribute("user");
+        return u==null? "admin@loja" : u.getEmail();
+    }
+    private String saveImage(MultipartFile img)throws IOException{
+        if (img==null||img.isEmpty()) return null;
+        String ext=Optional.ofNullable(img.getOriginalFilename())
+                .filter(n->n.contains("."))
+                .map(n->n.substring(n.lastIndexOf('.')))
+                .orElse("");
+        String name=UUID.randomUUID()+ext;
+        Files.copy(img.getInputStream(),
+                uploadDir.resolve(name),StandardCopyOption.REPLACE_EXISTING);
+        return name;
+    }
+    private static Optional<Double> tryDouble(String s){
+        try{ return Optional.of(Double.parseDouble(s)); }catch(NumberFormatException e){return Optional.empty();}
+    }
+    private static Optional<Integer> tryInt(String s){
+        try{ return Optional.of(Integer.parseInt(s)); }catch(NumberFormatException e){return Optional.empty();}
     }
 }
